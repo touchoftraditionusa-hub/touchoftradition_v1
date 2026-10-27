@@ -70,6 +70,7 @@ const CONFIG={
  email:"touchoftraditionusa@gmail.com", instagram:"", // add real values; shown only when set
  announcement:"Discover timeless Indian elegance · Shipping availability across India and the USA",
  shopify:{domain:"",storefrontToken:"",apiVersion:"2025-01"}, // e.g. domain:"your-store.myshopify.com", public Storefront API token
+ showContactWhatsApp:false,
  showFloatingWhatsApp:false,
  catalogUrl:"https://script.google.com/macros/s/AKfycbyZLBO-00rI2BF40UTJj-6gLGqPPXwlSzhR514RaLWP67XaWTugd7MVVS1r2LyEh_Rg/exec", // Apps Script web app URL (see product-form/SETUP.md)
  newsletterEndpoint:"", // connect a real mailing-list service before claiming subscriptions are saved
@@ -138,7 +139,7 @@ document.addEventListener("click",e=>{const a=e.target.closest("[data-f]");if(!a
 /* ===== Modals ===== */
 const openModal=id=>$(id).classList.add("open"),closeModal=id=>$(id).classList.remove("open");
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){document.querySelectorAll(".modal.open").forEach(m=>m.classList.remove("open"));closeCart()}});
-function openPage(k){let c=CONFIG.pages[k];if(k==="contact"){$("pageTitle").textContent="Contact Us";$("pageBody").innerHTML="";const d=document.createElement("div");d.innerHTML="<p>Reach us for questions about products, sizing, availability and orders.</p>"+(CONFIG.email?`<p>Email: ${CONFIG.email}</p>`:"<p>Email: to be configured.</p>")+(CONFIG.whatsappNumber?"":"<p>WhatsApp: to be configured.</p>");$("pageBody").append(d);const b=document.createElement("button");b.className="btn btn-dark";b.textContent="Message us on WhatsApp";b.onclick=waGeneral;$("pageBody").append(b)}else{$("pageTitle").textContent=c[0];$("pageBody").innerHTML="";const p=document.createElement("p");p.textContent=c[1];$("pageBody").append(p)}openModal("pageModal")}
+function openPage(k){let c=CONFIG.pages[k];if(k==="contact"){$("pageTitle").textContent="Contact Us";$("pageBody").innerHTML="";const d=document.createElement("div");d.innerHTML="<p>Reach us for questions about products, sizing, availability and orders.</p>"+(CONFIG.email?`<p>Email: ${CONFIG.email}</p>`:"<p>Email: to be configured.</p>")+(CONFIG.whatsappNumber?"":"<p>WhatsApp: to be configured.</p>");$("pageBody").append(d);if(CONFIG.showContactWhatsApp){const b=document.createElement("button");b.className="btn btn-dark";b.textContent="Message us on WhatsApp";b.onclick=waGeneral;$("pageBody").append(b)}}else{$("pageTitle").textContent=c[0];$("pageBody").innerHTML="";const p=document.createElement("p");p.textContent=c[1];$("pageBody").append(p)}openModal("pageModal")}
 /* ===== Quick view / product detail ===== */
 let qv={id:0,color:"",qty:1};
 function quickView(id){const p=find(id);qv={id,color:(p.sizes&&p.sizes.length)?"":(variants(p)[0]||""),qty:1};$("qvTitle").textContent=p.name;drawQV();openModal("qvModal")}
