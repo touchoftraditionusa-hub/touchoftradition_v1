@@ -70,6 +70,7 @@ const CONFIG={
  email:"touchoftraditionusa@gmail.com", instagram:"", // add real values; shown only when set
  announcement:"Discover timeless Indian elegance · Shipping availability across India and the USA",
  shopify:{domain:"",storefrontToken:"",apiVersion:"2025-01"}, // e.g. domain:"your-store.myshopify.com", public Storefront API token
+ showFloatingWhatsApp:false,
  catalogUrl:"https://script.google.com/macros/s/AKfycbyZLBO-00rI2BF40UTJj-6gLGqPPXwlSzhR514RaLWP67XaWTugd7MVVS1r2LyEh_Rg/exec", // Apps Script web app URL (see product-form/SETUP.md)
  newsletterEndpoint:"", // connect a real mailing-list service before claiming subscriptions are saved
  pages:{ // placeholder policy copy: replace with your own approved text
@@ -123,7 +124,7 @@ function renderStatic(){
  const ci=[];if(CONFIG.email)ci.push("Email: "+CONFIG.email);if(CONFIG.instagram)ci.push(`<a href="${CONFIG.instagram}" target="_blank" rel="noopener">Instagram</a>`);
  $("contactInfo").innerHTML="<p>Serving customers in India and the USA.</p>"+(ci.length?ci.map(x=>`<p>${x}</p>`).join(""):"<p>Contact details to be configured.</p>");
  if(CONFIG.instagram){$("social").classList.remove("hidden");$("igLink").href=CONFIG.instagram}
- $("year").textContent=new Date().getFullYear();$("market").value=currency;
+ $("year").textContent=new Date().getFullYear();if(!CONFIG.showFloatingWhatsApp)document.querySelector(".wafab")?.remove();$("market").value=currency;
 }
 function renderProducts(){
  const q=$("searchInput").value.trim().toLowerCase(),s=$("sortSel").value;
