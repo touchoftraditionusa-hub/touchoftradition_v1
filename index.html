@@ -33,7 +33,7 @@
 <h1>Timeless Elegance. Rooted in Tradition.</h1><p>Discover thoughtfully curated sarees, ethnic wear, contemporary styles, and jewellery that celebrate the beauty of Indian heritage.</p>
 <div class="btns"><a class="btn" href="#collections">Explore Collections <span>→</span></a><a class="btn ghost" href="#products" data-f="Bridal">Shop the Bridal Edit</a></div></div></section>
 <section class="section" id="collections"><div class="section-head"><div class="eyebrow">Find your forever piece</div><h2>Shop by Collection</h2><div class="ornament"></div><p>Pieces that honour heritage and celebrate your individual style.</p></div><div class="collections" id="collGrid"></div></section>
-<section class="section" id="products"><div class="section-head"><div class="eyebrow">Curated with care</div><h2>Curated for You</h2><div class="ornament"></div><p id="catNote">Sample catalogue — connect your Google Sheet (CONFIG.sheetCsvUrl) to show your own products.</p></div>
+<section class="section" id="products"><div class="section-head"><div class="eyebrow">Curated with care</div><h2>Curated for You</h2><div class="ornament"></div><p id="catNote">Explore our latest arrivals.</p></div>
 <div class="toolbar"><div class="filters" id="filters"></div><div style="display:flex;gap:8px;flex-wrap:wrap"><input class="sort2" id="searchInput" aria-label="Search products" placeholder="Search by name…" oninput="renderProducts()"><select class="sort2" id="sortSel" aria-label="Sort products" onchange="renderProducts()"><option value="">Featured</option><option value="lo">Price: low to high</option><option value="hi">Price: high to low</option><option value="az">Name: A–Z</option></select></div></div>
 <div class="products" id="productGrid" aria-live="polite"></div></section>
 <section class="story" id="story"><img data-hero loading="lazy" alt="Woman in a maroon and gold silk saree in a heritage setting"><div class="story-copy"><div class="eyebrow">Our story</div><h2>A Heritage Woven Into Every Detail</h2><p>Touch of Tradition brings together the richness of Indian craftsmanship and the elegance of modern style. From timeless sarees and occasion wear to contemporary ethnic outfits and jewellery, every collection is an invitation to celebrate tradition in your own way.</p><a class="btn btn-dark" href="#" onclick="openPage('about');return false">Learn more about us →</a></div></section>
@@ -120,7 +120,7 @@ function renderStatic(){
  $("occGrid").innerHTML=OCCASIONS.map(o=>`<a class="occasion" href="#products" data-f="${o[1]}" data-o="${o[2]}">${o[0]}<small>Explore</small></a>`).join("");
  document.querySelectorAll("[data-hero]").forEach(i=>i.src=HERO);
  document.documentElement.style.setProperty("--hero",`url("${HERO}")`);
- const ci=[];if(CONFIG.email)ci.push("Email: "+CONFIG.email);if(CONFIG.whatsappNumber)ci.push("WhatsApp: +"+CONFIG.whatsappNumber);if(CONFIG.instagram)ci.push(`<a href="${CONFIG.instagram}" target="_blank" rel="noopener">Instagram</a>`);
+ const ci=[];if(CONFIG.email)ci.push("Email: "+CONFIG.email);if(CONFIG.instagram)ci.push(`<a href="${CONFIG.instagram}" target="_blank" rel="noopener">Instagram</a>`);
  $("contactInfo").innerHTML="<p>Serving customers in India and the USA.</p>"+(ci.length?ci.map(x=>`<p>${x}</p>`).join(""):"<p>Contact details to be configured.</p>");
  if(CONFIG.instagram){$("social").classList.remove("hidden");$("igLink").href=CONFIG.instagram}
  $("year").textContent=new Date().getFullYear();$("market").value=currency;

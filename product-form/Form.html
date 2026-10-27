@@ -27,15 +27,21 @@ function toggle(){const z=SIZED.includes($("coll").value);$("szBox").style.displ
 $("coll").onchange=toggle;toggle();
 $("photo").onchange=e=>{const f=e.target.files[0];if(!f)return;const im=new Image();im.onload=()=>{const m=1000,k=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=im.width*k;c.height=im.height*k;c.getContext("2d").drawImage(im,0,0,c.width,c.height);const d=c.toDataURL("image/jpeg",.82);IMG=d.split(",")[1];$("prev").src=d;$("prev").style.display="block"};im.src=URL.createObjectURL(f)};
 const stockOf=root=>{const o={};root.querySelectorAll("[data-s]").forEach(i=>o[i.dataset.s]=i.value);return o};
+let API="<?= ScriptApp.getService().getUrl() ?>";
+if(!/^https:/.test(API))API=localStorage.getItem("totApi")||prompt("Paste your Apps Script web app URL (ends with /exec)")||"";
+async function api(action,args){if(!API)throw new Error("Web app URL missing.");
+ const r=await fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action:action,args:args})});
+ const j=await r.json();if(!j.ok)throw new Error(j.error||"Something went wrong.");return j.result}
 function add(){const b=$("add");b.disabled=true;say("Saving…",true);
- google.script.run.withSuccessHandler(m=>{say(m,true);b.disabled=false;["name","price","colour","desc","photo","qty"].forEach(i=>$(i).value="");$("feat").checked=false;$("szGrid").innerHTML=grid();IMG="";$("prev").style.display="none"}).withFailureHandler(e=>{say(e.message,false);b.disabled=false})
- .addProduct({passcode:$("pass").value,name:$("name").value,collection:$("coll").value,price:$("price").value,stock:stockOf($("szGrid")),qty:$("qty").value,colour:$("colour").value,description:$("desc").value,featured:$("feat").checked,image:IMG})}
-function load(){google.script.run.withSuccessHandler(rows=>{const L=$("list");L.innerHTML="";if(!rows.length)return say("No products yet.",true);
+ api("addProduct",[{passcode:$("pass").value,name:$("name").value,collection:$("coll").value,price:$("price").value,stock:stockOf($("szGrid")),qty:$("qty").value,colour:$("colour").value,description:$("desc").value,featured:$("feat").checked,image:IMG}])
+ .then(m=>{say(m,true);b.disabled=false;["name","price","colour","desc","photo","qty"].forEach(i=>$(i).value="");$("feat").checked=false;$("szGrid").innerHTML=grid();IMG="";$("prev").style.display="none"})
+ .catch(e=>{say(e.message,false);b.disabled=false})}
+function load(){say("Loading…",true);api("listProducts",[$("pass").value]).then(rows=>{const L=$("list");L.innerHTML="";if(!rows.length)return say("No products yet.",true);$("msg").style.display="none";
  rows.forEach(r=>{const c=document.createElement("div");c.className="card";const h=document.createElement("h3");h.textContent=r.name+" ("+r.collection+", $"+r.price+")";c.append(h);
   const sel=document.createElement("select");STAT.forEach(x=>{const o=document.createElement("option");o.textContent=x;o.selected=x===r.status;sel.append(o)});
   const box=document.createElement("div");if(r.sized){box.className="grid";box.innerHTML=grid(r.sizes)}else{box.innerHTML='<input type="number" min="0" step="1" data-q value="'+(r.qty===""?"":r.qty)+'">'}
   const lab=document.createElement("div");lab.className="hint";lab.style.margin="8px 0 4px";lab.textContent=r.sized?"Quantity per size":"Quantity available";
   const btn=document.createElement("button");btn.textContent="Save";
-  btn.onclick=()=>{btn.disabled=true;google.script.run.withSuccessHandler(()=>{btn.disabled=false;say("Saved: "+r.name,true)}).withFailureHandler(e=>{btn.disabled=false;say(e.message,false)}).updateProduct($("pass").value,r.id,sel.value,r.sized?{stock:stockOf(box)}:{qty:box.querySelector("[data-q]").value})};
-  c.append(sel,lab,box,btn);L.append(c)})}).withFailureHandler(e=>say(e.message,false)).listProducts($("pass").value)}
+  btn.onclick=()=>{btn.disabled=true;api("updateProduct",[$("pass").value,r.id,sel.value,r.sized?{stock:stockOf(box)}:{qty:box.querySelector("[data-q]").value}]).then(()=>{btn.disabled=false;say("Saved: "+r.name,true)}).catch(e=>{btn.disabled=false;say(e.message,false)})};
+  c.append(sel,lab,box,btn);L.append(c)})}).catch(e=>say(e.message,false))}
 </script></body></html>

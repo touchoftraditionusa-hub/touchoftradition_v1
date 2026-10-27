@@ -19,8 +19,18 @@ function setup(){
 function doGet(e){
   if (e && e.parameter && e.parameter.action === 'catalog')
     return ContentService.createTextOutput(JSON.stringify(catalog_())).setMimeType(ContentService.MimeType.JSON);
-  return HtmlService.createHtmlOutputFromFile('Form').setTitle('Touch of Tradition: Products')
+  return HtmlService.createTemplateFromFile('Form').evaluate().setTitle('Touch of Tradition: Products')
     .addMetaTag('viewport','width=device-width, initial-scale=1');
+}
+function doPost(e){
+  let out;
+  try {
+    const body = JSON.parse(e.postData.contents);
+    const fn = {addProduct:addProduct, listProducts:listProducts, updateProduct:updateProduct}[body.action];
+    if (!fn) throw new Error('Unknown action.');
+    out = {ok:true, result:fn.apply(null, body.args || [])};
+  } catch (err) { out = {ok:false, error:String(err.message || err)}; }
+  return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
 }
 function check_(p){ if (p !== PASSCODE) throw new Error('Wrong passcode.'); }
 function sheet_(){ return SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET); }
