@@ -27,10 +27,18 @@ function toggle(){const z=SIZED.includes($("coll").value);$("szBox").style.displ
 $("coll").onchange=toggle;toggle();
 $("photo").onchange=e=>{const f=e.target.files[0];if(!f)return;const im=new Image();im.onload=()=>{const m=1000,k=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=im.width*k;c.height=im.height*k;c.getContext("2d").drawImage(im,0,0,c.width,c.height);const d=c.toDataURL("image/jpeg",.82);IMG=d.split(",")[1];$("prev").src=d;$("prev").style.display="block"};im.src=URL.createObjectURL(f)};
 const stockOf=root=>{const o={};root.querySelectorAll("[data-s]").forEach(i=>o[i.dataset.s]=i.value);return o};
+const API_URL=""; // optional: paste your web app URL (ends with /exec) here to skip any prompt
 let API="<?= ScriptApp.getService().getUrl() ?>";
-if(!/^https:/.test(API))API=localStorage.getItem("totApi")||prompt("Paste your Apps Script web app URL (ends with /exec)")||"";
-async function api(action,args){if(!API)throw new Error("Web app URL missing.");
- const r=await fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action:action,args:args})});
+const okUrl=u=>/^https:\/\//.test(u||"");
+function getApi(){
+  if(okUrl(API))return API;
+  if(okUrl(API_URL))return API=API_URL;
+  try{const s=localStorage.getItem("totApi");if(okUrl(s))return API=s}catch(e){}
+  const u=(prompt("Paste your Apps Script web app URL (ends with /exec)")||"").trim();
+  if(okUrl(u)){API=u;try{localStorage.setItem("totApi",u)}catch(e){}return u}
+  return ""}
+async function api(action,args){const url=getApi();if(!url)throw new Error("Web app URL missing. Re-deploy Code.gs as a new version, or paste the URL into API_URL at the top of the script.");
+ const r=await fetch(url,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action:action,args:args})});
  const j=await r.json();if(!j.ok)throw new Error(j.error||"Something went wrong.");return j.result}
 function add(){const b=$("add");b.disabled=true;say("Saving…",true);
  api("addProduct",[{passcode:$("pass").value,name:$("name").value,collection:$("coll").value,price:$("price").value,stock:stockOf($("szGrid")),qty:$("qty").value,colour:$("colour").value,description:$("desc").value,featured:$("feat").checked,image:IMG}])
